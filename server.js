@@ -1,5 +1,7 @@
 const express = require("express");
 require("dotenv").config();
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./config/swagger");
 const orderRoutes = require("./routes/orderRoutes");
 
 const app = express();
@@ -14,10 +16,17 @@ app.use((req, res, next) => {
   next();
 });
 
+// Swagger UI
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: "API Jitterbit - Documentação",
+}));
+
 app.get("/", (req, res) => {
   res.json({
     message: "API de Pedidos - Jitterbit",
     version: "1.0.0",
+    documentation: "/api-docs",
     endpoints: {
       "POST /order": "Criar novo pedido",
       "GET /order/:orderNumber": "Obter pedido por número",

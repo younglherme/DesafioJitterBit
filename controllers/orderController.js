@@ -1,12 +1,11 @@
 const pool = require("../config/database");
 
-// Criar um novo pedido
+// Criar pedido
 const createOrder = async (req, res) => {
   const client = await pool.connect();
   try {
     const { numeroPedido, valorTotal, dataCriacao, items } = req.body;
 
-    // Validação básica
     if (!valorTotal || !items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
         error: "Campos obrigatórios: valorTotal, items (array não vazio)",
@@ -30,7 +29,7 @@ const createOrder = async (req, res) => {
     const orderResult = await client.query(orderQuery, orderValues);
     const order = orderResult.rows[0];
 
-    // Inserir os items na tabela Items
+    // Inserir items na tabela Items
     const itemsPromises = items.map(async (item) => {
       const itemQuery = `
         INSERT INTO "Items" ("orderId", "productId", "quantity", "price")
@@ -75,12 +74,11 @@ const createOrder = async (req, res) => {
   }
 };
 
-// Obter pedido por ID
+// Listar pedido pelo numero
 const getOrderByNumber = async (req, res) => {
   try {
     const { orderNumber } = req.params;
 
-    // Buscar o pedido
     const orderQuery = 'SELECT * FROM "Order" WHERE "orderId" = $1';
     const orderResult = await pool.query(orderQuery, [orderNumber]);
 
@@ -92,7 +90,7 @@ const getOrderByNumber = async (req, res) => {
 
     const order = orderResult.rows[0];
 
-    // Buscar os items do pedido
+    // Buscar items do pedido
     const itemsQuery = 'SELECT * FROM "Items" WHERE "orderId" = $1';
     const itemsResult = await pool.query(itemsQuery, [orderNumber]);
 
@@ -117,7 +115,7 @@ const getOrderByNumber = async (req, res) => {
 // Listar todos os pedidos
 const listAllOrders = async (req, res) => {
   try {
-    // Buscar todos os pedidos com seus items usando JOIN
+
     const query = `
       SELECT 
         o."orderId",
@@ -167,7 +165,7 @@ const updateOrder = async (req, res) => {
     const { orderNumber } = req.params;
     const { valorTotal, dataCriacao, items } = req.body;
 
-    // Verificar se o pedido existe
+    // validação do pedido
     const checkQuery = 'SELECT * FROM "Order" WHERE "orderId" = $1';
     const checkResult = await client.query(checkQuery, [orderNumber]);
 
@@ -207,7 +205,7 @@ const updateOrder = async (req, res) => {
       await client.query(updateQuery, values);
     }
 
-    // Se items foram fornecidos, atualizar
+    // condição para atualizar items
     if (items && Array.isArray(items)) {
       // Deletar items existentes
       await client.query('DELETE FROM "Items" WHERE "orderId" = $1', [
@@ -241,7 +239,6 @@ const updateOrder = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Pedido atualizado com sucesso",
-      message: "Pedido atualizado com sucesso",
       data: {
         orderId: orderResult.rows[0].orderId,
         value: parseFloat(orderResult.rows[0].value),
@@ -266,7 +263,6 @@ const deleteOrder = async (req, res) => {
   try {
     const { orderNumber } = req.params;
 
-    // Buscar pedido e items antes de deletar
     const orderQuery = 'SELECT * FROM "Order" WHERE "orderId" = $1';
     const orderResult = await pool.query(orderQuery, [orderNumber]);
 
@@ -279,7 +275,7 @@ const deleteOrder = async (req, res) => {
     const itemsQuery = 'SELECT * FROM "Items" WHERE "orderId" = $1';
     const itemsResult = await pool.query(itemsQuery, [orderNumber]);
 
-    // Deletar pedido (items serão deletados em cascata)
+    // Deletar order (cascate)
     const deleteQuery = 'DELETE FROM "Order" WHERE "orderId" = $1';
     await pool.query(deleteQuery, [orderNumber]);
 

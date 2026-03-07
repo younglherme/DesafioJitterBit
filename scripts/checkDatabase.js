@@ -12,7 +12,7 @@ async function checkDatabase() {
 
   try {
     await dbClient.connect();
-    console.log("✅ Conectado ao banco:", process.env.DB_NAME || "bdjitterbit");
+    console.log(" Conectado ao banco:", process.env.DB_NAME || "bdjitterbit");
     console.log("");
 
     // Verificar tabelas existentes
@@ -25,10 +25,10 @@ async function checkDatabase() {
 
     const result = await dbClient.query(tablesQuery);
 
-    console.log("📋 Tabelas encontradas:");
+    console.log(" Tabelas encontradas:");
     console.log("─────────────────────────────────────");
     if (result.rows.length === 0) {
-      console.log("⚠️  Nenhuma tabela encontrada!");
+      console.log("  Nenhuma tabela encontrada!");
     } else {
       result.rows.forEach((row) => {
         console.log(`   ${row.table_schema}.${row.table_name}`);
@@ -40,16 +40,16 @@ async function checkDatabase() {
     try {
       const orderCount = await dbClient.query('SELECT COUNT(*) FROM "Order"');
       const itemsCount = await dbClient.query('SELECT COUNT(*) FROM "Items"');
-      console.log("📊 Dados:");
+      console.log(" Dados:");
       console.log(`   Pedidos: ${orderCount.rows[0].count}`);
       console.log(`   Items: ${itemsCount.rows[0].count}`);
     } catch (err) {
-      console.log("⚠️  Erro ao contar registros:", err.message);
+      console.log("  Erro ao contar registros:", err.message);
     }
 
     await dbClient.end();
   } catch (error) {
-    console.error("❌ Erro:", error.message);
+    console.error(" Erro:", error.message);
     process.exit(1);
   }
 }

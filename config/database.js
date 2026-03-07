@@ -15,7 +15,7 @@ pool.on("connect", () => {
 });
 
 pool.on("error", (err) => {
-  console.error("❌ Erro inesperado no banco de dados:", err);
+  console.error(" Erro inesperado no banco de dados:", err);
   process.exit(-1);
 });
 

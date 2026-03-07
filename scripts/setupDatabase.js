@@ -16,12 +16,12 @@ async function setupDatabase() {
     console.log(`Conectado ao banco '${process.env.DB_NAME || "bdjitterbit"}'`);
 
     // Dropar tabelas se existirem
-    console.log("🗑️  Removendo tabelas antigas...");
+    console.log("  Removendo tabelas antigas...");
     await dbClient.query('DROP TABLE IF EXISTS "Items" CASCADE');
     await dbClient.query('DROP TABLE IF EXISTS "Order" CASCADE');
-    console.log("✅ Tabelas antigas removidas");
+    console.log(" Tabelas antigas removidas");
 
-    // Criar a tabela Order
+    // Criar Order
     const createOrderTableQuery = `
       CREATE TABLE "Order" (
         "orderId" SERIAL PRIMARY KEY,
@@ -31,9 +31,9 @@ async function setupDatabase() {
     `;
 
     await dbClient.query(createOrderTableQuery);
-    console.log('✅ Tabela "Order" criada com sucesso');
+    console.log(' Tabela "Order" criada com sucesso');
 
-    // Criar a tabela Items
+    // Criar  Items
     const createItemsTableQuery = `
       CREATE TABLE "Items" (
         "itemId" SERIAL PRIMARY KEY,
@@ -46,17 +46,9 @@ async function setupDatabase() {
     `;
 
     await dbClient.query(createItemsTableQuery);
-    console.log('✅ Tabela "Items" criada com sucesso');
+    console.log(' Tabela "Items" criada com sucesso');
 
-    // Criar índices
-    await dbClient.query('CREATE INDEX idx_order_id ON "Items"("orderId")');
-    await dbClient.query('CREATE INDEX idx_product_id ON "Items"("productId")');
-    await dbClient.query(
-      'CREATE INDEX idx_creation_date ON "Order"("creationDate")',
-    );
-    console.log("✅ Índices criados com sucesso");
-
-    // Inserir dados de exemplo na tabela Order
+    // dados fictícios na tabela Order
     const insertOrderQuery = `
       INSERT INTO "Order" ("value", "creationDate") 
       VALUES 
@@ -70,9 +62,9 @@ async function setupDatabase() {
       insertOrderQuery,
       [3500.0, 250.0, 1200.0],
     );
-    console.log("Dados de exemplo inseridos na tabela Order");
+    console.log("Dados fictícios inseridos na tabela Order");
 
-    // Inserir dados de exemplo na tabela Items
+    // dados fictícios na tabela Items
     const orderIds = orderResult.rows.map((row) => row.orderId);
 
     await dbClient.query(
@@ -91,7 +83,7 @@ async function setupDatabase() {
       'INSERT INTO "Items" ("orderId", "productId", "quantity", "price") VALUES ($1, 104, 1, 1200.00)',
       [orderIds[2]],
     );
-    console.log("Dados de exemplo inseridos na tabela Items");
+    console.log("Dados fictícios inseridos na tabela Items");
 
     // Verificar dados
     const orderCount = await dbClient.query('SELECT COUNT(*) FROM "Order"');
@@ -101,8 +93,7 @@ async function setupDatabase() {
 
     await dbClient.end();
 
-    console.log("\n Setup do banco de dados concluído com sucesso!");
-    console.log("  Você já pode iniciar o servidor com: npm start");
+    console.log("\n Banco de dados verificado!");
   } catch (error) {
     console.error(" Erro durante o setup:", error.message);
     process.exit(1);
