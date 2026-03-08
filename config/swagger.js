@@ -20,6 +20,14 @@ const options = {
       },
     ],
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+          description: "Insira o token JWT no formato: Bearer {token}",
+        },
+      },
       schemas: {
         Item: {
           type: "object",

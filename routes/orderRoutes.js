@@ -7,6 +7,7 @@ const {
   updateOrder,
   deleteOrder,
 } = require("../controllers/orderController");
+const { authenticateToken } = require("../middleware/authMiddleware");
 
 /**
  * @swagger
@@ -15,6 +16,8 @@ const {
  *     summary: Criar um novo pedido
  *     description: Cria um novo pedido com seus itens associados
  *     tags: [Pedidos]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -41,6 +44,12 @@ const {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Não autorizado - Token inválido ou ausente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Erro interno do servidor
  *         content:
@@ -48,7 +57,7 @@ const {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post("/order", createOrder);
+router.post("/order", authenticateToken, createOrder);
 
 /**
  * @swagger
@@ -57,6 +66,8 @@ router.post("/order", createOrder);
  *     summary: Listar todos os pedidos
  *     description: Retorna uma lista com todos os pedidos e seus itens
  *     tags: [Pedidos]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de pedidos retornada com sucesso
@@ -89,6 +100,12 @@ router.post("/order", createOrder);
  *                         type: array
  *                         items:
  *                           type: object
+ *       401:
+ *         description: Não autorizado - Token inválido ou ausente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Erro ao listar pedidos
  *         content:
@@ -96,7 +113,7 @@ router.post("/order", createOrder);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get("/order/list", listAllOrders);
+router.get("/order/list", authenticateToken, listAllOrders);
 
 /**
  * @swagger
@@ -105,6 +122,8 @@ router.get("/order/list", listAllOrders);
  *     summary: Buscar pedido por número
  *     description: Retorna um pedido específico pelo seu número
  *     tags: [Pedidos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: orderNumber
@@ -146,6 +165,12 @@ router.get("/order/list", listAllOrders);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Não autorizado - Token inválido ou ausente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Erro ao buscar pedido
  *         content:
@@ -153,7 +178,7 @@ router.get("/order/list", listAllOrders);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get("/order/:orderNumber", getOrderByNumber);
+router.get("/order/:orderNumber", authenticateToken, getOrderByNumber);
 
 /**
  * @swagger
@@ -162,6 +187,8 @@ router.get("/order/:orderNumber", getOrderByNumber);
  *     summary: Atualizar pedido
  *     description: Atualiza os dados de um pedido existente
  *     tags: [Pedidos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: orderNumber
@@ -200,6 +227,12 @@ router.get("/order/:orderNumber", getOrderByNumber);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Não autorizado - Token inválido ou ausente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Erro ao atualizar pedido
  *         content:
@@ -207,7 +240,7 @@ router.get("/order/:orderNumber", getOrderByNumber);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put("/order/:orderNumber", updateOrder);
+router.put("/order/:orderNumber", authenticateToken, updateOrder);
 
 /**
  * @swagger
@@ -216,6 +249,8 @@ router.put("/order/:orderNumber", updateOrder);
  *     summary: Deletar pedido
  *     description: Remove um pedido e seus itens
  *     tags: [Pedidos]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: orderNumber
@@ -237,6 +272,12 @@ router.put("/order/:orderNumber", updateOrder);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Não autorizado - Token inválido ou ausente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Erro ao deletar pedido
  *         content:
@@ -244,6 +285,6 @@ router.put("/order/:orderNumber", updateOrder);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete("/order/:orderNumber", deleteOrder);
+router.delete("/order/:orderNumber", authenticateToken, deleteOrder);
 
 module.exports = router;

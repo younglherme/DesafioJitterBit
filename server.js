@@ -3,6 +3,7 @@ require("dotenv").config();
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
 const orderRoutes = require("./routes/orderRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,10 +18,14 @@ app.use((req, res, next) => {
 });
 
 // Swagger UI
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: "API Jitterbit - Documentação",
-}));
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customCss: ".swagger-ui .topbar { display: none }",
+    customSiteTitle: "API Jitterbit - Documentação",
+  }),
+);
 
 app.get("/", (req, res) => {
   res.json({
@@ -28,15 +33,27 @@ app.get("/", (req, res) => {
     version: "1.0.0",
     documentation: "/api-docs",
     endpoints: {
-      "POST /order": "Criar novo pedido",
-      "GET /order/:orderNumber": "Obter pedido por número",
-      "GET /order/list": "Listar todos os pedidos",
-      "PUT /order/:orderNumber": "Atualizar pedido",
-      "DELETE /order/:orderNumber": "Deletar pedido",
+      autenticacao: {
+        "POST /auth/login": "Fazer login e obter token JWT",
+        "GET /auth/validate": "Validar token JWT",
+      },
+      pedidos: {
+        "POST /order": "Criar novo pedido (requer autenticação)",
+        "GET /order/:orderNumber":
+          "Obter pedido por número (requer autenticação)",
+        "GET /order/list": "Listar todos os pedidos (requer autenticação)",
+        "PUT /order/:orderNumber": "Atualizar pedido (requer autenticação)",
+        "DELETE /order/:orderNumber": "Deletar pedido (requer autenticação)",
+      },
+    },
+    usuarios_demo: {
+      admin: { username: "admin", password: "admin123" },
+      user: { username: "user", password: "user123" },
     },
   });
 });
 
+app.use("/auth", authRoutes);
 app.use("/", orderRoutes);
 
 app.use((req, res) => {
@@ -44,7 +61,6 @@ app.use((req, res) => {
     error: "Rota não encontrada",
   });
 });
-
 
 app.use((err, req, res, next) => {
   console.error("Erro:", err);
